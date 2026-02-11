@@ -7,7 +7,6 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-
 public class WikipediaApiClient {
 
     private static final String BASE_URL =
@@ -19,30 +18,40 @@ public class WikipediaApiClient {
         return BASE_URL + encoded;
     }
 
-    public String fetchRevisionsJson(String articleName) throws Exception {
-        String urlString = buildUrl(articleName);
+    // ⚠️ THIS SIGNATURE MUST MATCH THE TEST
+    protected URLConnection openConnection(String urlString) throws Exception {
         URL url = new URL(urlString);
-
         URLConnection connection = url.openConnection();
         connection.setRequestProperty(
                 "User-Agent",
                 "RevisionReporter/0.1 (yourbsuusername@bsu.edu)"
         );
+        return connection;
+    }
 
-        BufferedReader reader =
-                new BufferedReader(
-                        new InputStreamReader(
-                                connection.getInputStream(),
-                                StandardCharsets.UTF_8
-                        )
-                );
+    public String fetchRevisionsJson(String articleName) {
+        try {
+            String urlString = buildUrl(articleName);
+            URLConnection connection = openConnection(urlString);
 
-        StringBuilder json = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            json.append(line);
+            try (BufferedReader reader =
+                         new BufferedReader(
+                                 new InputStreamReader(
+                                         connection.getInputStream(),
+                                         StandardCharsets.UTF_8
+                                 )
+                         )) {
+
+                StringBuilder json = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    json.append(line);
+                }
+                return json.toString();
+            }
+
+        } catch (Exception e) {
+            throw new WikipediaApiException("Failed to fetch data from Wikipedia", e);
         }
-
-        return json.toString();
     }
 }
