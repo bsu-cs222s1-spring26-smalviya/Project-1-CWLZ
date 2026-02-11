@@ -5,19 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class WikipediaApiClientTest {
     @Test
-    void buildUrl_encodesSpacesCorrectly() {
+    void fetchRevisionsJson_returnsJsonForValidArticle() throws Exception {
         WikipediaApiClient client = new WikipediaApiClient();
-        String url = client.buildUrl("Frank Zappa");
+        String json = client.fetchRevisionsJson("Zappa");
 
-        assertTrue(url.contains("Frank+Zappa"));
-    }
+        assertNotNull(json);
+        assertTrue(json.contains("\"query\""));
 
-    @Test
-    void buildUrl_containsBaseApiParameters() {
-        WikipediaApiClient client = new WikipediaApiClient();
-        String url = client.buildUrl("Zappa");
-
-        assertTrue(url.startsWith("https://en.wikipedia.org/w/api.php"));
-        assertTrue(url.contains("prop=revisions"));
     }
 }
