@@ -19,5 +19,5 @@ public class JsonPathLearningTest {
             String firstUser = users.getFirst();
             assertEquals("Username1", firstUser);
         } // end try
-    } // close void
-} // end class
+    } // end void
+} // close class
