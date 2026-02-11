@@ -10,8 +10,12 @@ repositories {
 }
 
 dependencies {
+    // JUnit 5
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    // JsonPath (for parsing Wikipedia JSON)
+    implementation 'com.jayway.jsonpath:json-path:2.9.0'
 }
 
 test {
