@@ -2,13 +2,19 @@ package edu.bsu.cs;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RevisionTest {
+
     @Test
     void storesUsernameAndTimeStamp() {
-        Revision revision = new Revision("TestUser", "2025-12-06T06:06:54");
+        Instant time = Instant.parse("2025-12-06T06:06:54Z");
+
+        Revision revision = new Revision("TestUser", time);
+
         assertEquals("TestUser", revision.getUsername());
-        assertEquals("2025-12-06T06:06:54", revision.getTimestamp());
+        assertEquals(time, revision.getTimestamp());
     } // end void
 } // close class

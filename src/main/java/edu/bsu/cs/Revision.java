@@ -1,11 +1,12 @@
 package edu.bsu.cs;
 
-public class Revision {
+import java.time.Instant;
 
+public final class Revision {
     private final String username;
-    private final String timestamp;
+    private final Instant timestamp;
 
-    public Revision(String username, String timestamp) {
+    public Revision(String username, Instant timestamp) {
         this.username = username;
         this.timestamp = timestamp;
     } // end Revision
@@ -14,7 +15,7 @@ public class Revision {
         return username;
     } // end getUsername
 
-    public String getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     } // end getTimestamp
 } // close class
