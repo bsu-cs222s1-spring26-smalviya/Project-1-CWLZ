@@ -24,7 +24,7 @@ public class RevisionParserTest {
         Revision first = revisions.get(0);
         assertEquals("Username1", first.getUsername());
         assertEquals(Instant.parse("2026-01-13T22:47:03Z"), first.getTimestamp());
-    }
+    } // end void
 
     @Test
     void reportsNotRedirectWhenPageIsNotRedirect() {
@@ -35,5 +35,5 @@ public class RevisionParserTest {
         RevisionResult result = parser.parse(stream);
 
         assertTrue(result.isRedirect());
-    }
-}
+    } // end void
+} // close class
