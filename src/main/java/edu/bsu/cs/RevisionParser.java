@@ -8,7 +8,7 @@ import java.time.Instant;
 import java.util.*;
 
 public class RevisionParser {
-    public List<Revision> parse(InputStream jsonStream) {
+    public RevisionResult parse(InputStream jsonStream) {
         String json = readAll(jsonStream);
 
         List<Map<String, String>> revisions = JsonPath.read(json, "$.query.pages.*.revisions[*]");
@@ -16,11 +16,20 @@ public class RevisionParser {
         for (Map<String, String> revision : revisions) {
             String user = revision.get("user");
             String timestamp = revision.get("timestamp");
-
             results.add(new Revision(user, Instant.parse(timestamp)));
         } // end for
-        return results;
+        boolean redirect = isRedirect(json);
+        return new RevisionResult(results, redirect);
     } // end List<Revision>
+
+    private boolean isRedirect(String json) {
+        try {
+            List<Object> redirects = JsonPath.read(json, "$.query.redirects");
+            return !redirects.isEmpty();
+        } catch (Exception ignored) {
+            return false;
+        } // end try/catch
+    } // end isRedirect
 
     private String readAll(InputStream stream) {
         try {
