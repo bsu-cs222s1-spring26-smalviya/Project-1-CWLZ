@@ -6,9 +6,10 @@ import java.util.List;
 
 public class Main {
 
+    private static final int MAX_REVISIONS = 15;
+
     public static void main(String[] args) {
 
-        //error when no article name is provided
         if (args.length == 0) {
             System.err.println("Error: Please provide a Wikipedia article name.");
             System.exit(1);
@@ -21,7 +22,6 @@ public class Main {
         RevisionFormatter formatter = new RevisionFormatter();
 
         try {
-            //integrate API
             String json = client.fetchRevisionsJson(articleName);
 
             RevisionResult result = parser.parse(
@@ -32,23 +32,32 @@ public class Main {
                 System.out.println("Note: This page was redirected.");
             }
 
-            List<Revision> revisions = result.getRevisions();
-
-            int count = 1;
-            for (Revision revision : revisions) {
-                String line = formatter.format(count, revision);
-                System.out.println(line);
-                count++;
-            }
+            printRevisions(result.getRevisions(), formatter);
 
         } catch (WikipediaApiException e) {
-            // network failure handling
             System.err.println("Network error: " + e.getMessage());
             System.exit(2);
 
         } catch (Exception e) {
             System.err.println("Error: Could not retrieve revisions for article.");
             System.exit(3);
+        }
+    }
+
+    // separate output
+    private static void printRevisions(List<Revision> revisions,
+                                       RevisionFormatter formatter) {
+
+        int count = 1;
+
+        for (Revision revision : revisions) {
+            if (count > MAX_REVISIONS) {
+                break; // counter limit to 15
+            }
+
+            String line = formatter.format(count, revision);
+            System.out.println(line);
+            count++;
         }
     }
 }
