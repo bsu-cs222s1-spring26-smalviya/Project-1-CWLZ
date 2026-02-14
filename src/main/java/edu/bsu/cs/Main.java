@@ -2,18 +2,15 @@ package edu.bsu.cs;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class Main {
-
-    private static final int MAX_REVISIONS = 15;
 
     public static void main(String[] args) {
 
         if (args.length == 0) {
             System.err.println("Error: Please provide a Wikipedia article name.");
             System.exit(1);
-        }
+        } // end if
 
         String articleName = args[0];
 
@@ -28,11 +25,16 @@ public class Main {
                     new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
             );
 
-            if (result.isRedirect()) {
-                System.out.println("Note: This page was redirected.");
+            if (result.wasRedirected()) {
+                System.out.println("Redirected to " + result.getRedirectedTo());
             }
 
-            printRevisions(result.getRevisions(), formatter);
+            System.out.println(formatter.formatList(result.getRevisions()));
+
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error: No Wikipedia page found for that article.");
+            System.exit(4);
+
 
         } catch (WikipediaApiException e) {
             System.err.println("Network error: " + e.getMessage());
@@ -41,23 +43,6 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Error: Could not retrieve revisions for article.");
             System.exit(3);
-        }
-    }
-
-    // separate output
-    private static void printRevisions(List<Revision> revisions,
-                                       RevisionFormatter formatter) {
-
-        int count = 1;
-
-        for (Revision revision : revisions) {
-            if (count > MAX_REVISIONS) {
-                break; // counter limit to 15
-            }
-
-            String line = formatter.format(count, revision);
-            System.out.println(line);
-            count++;
         }
     }
 }
