@@ -10,17 +10,22 @@ public final class RevisionResult {
     public RevisionResult(List<Revision> revisions, String redirectedTo) {
         this.revisions = List.copyOf(revisions);
         this.redirectedTo = redirectedTo;
-    } // end RevisionResult
+    }
 
     public List<Revision> getRevisions() {
         return revisions;
-    } // end getRevisions
+    }
 
     public boolean wasRedirected() {
         return redirectedTo != null;
-    } // end isRedirect
+    }
+
+    // ✅ ADD THIS
+    public boolean isRedirect() {
+        return wasRedirected();
+    }
 
     public String getRedirectedTo() {
         return redirectedTo;
-    } // end getRedirectedTo
-} // close class
+    }
+}
