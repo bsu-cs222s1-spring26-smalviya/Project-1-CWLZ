@@ -2,22 +2,29 @@ package edu.bsu.cs;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GuiMain extends Application {
 
     @Override
     public void start(Stage stage) {
-        Label label = new Label("Wikipedia Revision Viewer");
+        Label titleLabel = new Label("Wikipedia Revision Tracker");
 
-        StackPane root = new StackPane();
-        root.getChildren().add(label);
+        TextField articleField = new TextField();
+        articleField.setPromptText("Enter Wikipedia article name");
 
-        Scene scene = new Scene(root, 400, 200);
+        Button searchButton = new Button("Search");
 
-        stage.setTitle("Wikipedia Revision Viewer");
+        TextArea outputArea = new TextArea();
+        outputArea.setEditable(false);
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(titleLabel, articleField, searchButton, outputArea);
+
+        Scene scene = new Scene(layout, 500, 400);
+        stage.setTitle("Wikipedia Tool");
         stage.setScene(scene);
         stage.show();
     }
