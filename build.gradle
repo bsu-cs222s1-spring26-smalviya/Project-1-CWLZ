@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
 }
 
 group = 'org.example'
@@ -8,10 +9,6 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-}
-
-application {
-    mainClass = 'edu.bsu.cs.Main'
 }
 
 dependencies {
@@ -24,6 +21,15 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+javafx {
+    version = "21"
+    modules = [ 'javafx.controls' ]
+}
+
+application {
+    mainClass = 'edu.bsu.cs.GuiMain'
 }
 
 test {
