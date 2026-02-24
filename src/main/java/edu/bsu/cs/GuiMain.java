@@ -7,7 +7,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class GuiMain extends Application {
 
@@ -17,7 +19,7 @@ public class GuiMain extends Application {
         Label titleLabel = new Label("Wikipedia Revision Viewer");
 
         TextField pageField = new TextField();
-        pageField.setPromptText("Enter Wikipedia page title (ex: Java)");
+        pageField.setPromptText("Enter Wikipedia page title");
 
         Button fetchButton = new Button("Fetch Revisions");
 
@@ -42,12 +44,15 @@ public class GuiMain extends Application {
             try {
                 WikipediaApiClient client = new WikipediaApiClient();
                 RevisionParser parser = new RevisionParser();
+                String json = client.fetchRevisionsJson(page);
 
-                InputStream jsonStream = client.fetchRevisions(page);
+                // Convert String to InputStream for parser
+                InputStream jsonStream =
+                        new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+
                 RevisionResult result = parser.parse(jsonStream);
 
                 StringBuilder sb = new StringBuilder();
-
                 sb.append("Page: ").append(page).append("\n\n");
 
                 if (result.wasRedirected()) {
@@ -60,9 +65,8 @@ public class GuiMain extends Application {
                     sb.append("No revisions found.");
                 } else {
                     for (Revision rev : result.getRevisions()) {
-                        sb.append("User: ").append(rev.getUser()).append("\n");
+                        sb.append("User: ").append(rev.getUsername()).append("\n");
                         sb.append("Timestamp: ").append(rev.getTimestamp()).append("\n");
-                        sb.append("Comment: ").append(rev.getComment()).append("\n");
                         sb.append("--------------------------------\n");
                     }
                 }
