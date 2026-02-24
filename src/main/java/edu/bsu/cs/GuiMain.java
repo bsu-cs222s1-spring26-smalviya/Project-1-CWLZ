@@ -1,64 +1,76 @@
 package edu.bsu.cs;
 
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class GuiMain extends Application {
 
     @Override
     public void start(Stage stage) {
-        TextField titleField = new TextField();
-        titleField.setPromptText("Enter Wikipedia page title");
+        TextField pageField = new TextField();
+        pageField.setPromptText("Enter Wikipedia page title");
 
         Button fetchButton = new Button("Fetch Revisions");
 
         TextArea outputArea = new TextArea();
         outputArea.setEditable(false);
 
-        fetchButton.setOnAction(e -> {
-            String title = titleField.getText();
+        VBox root = new VBox(10, pageField, fetchButton, outputArea);
+        Scene scene = new Scene(root, 500, 500);
 
-            WikipediaApiClient client = new WikipediaApiClient();
-            RevisionParser parser = new RevisionParser();
+        fetchButton.setOnAction(event -> {
+            String page = pageField.getText().trim();
+
+            if (page.isEmpty()) {
+                outputArea.setText("Please enter a page title.");
+                return;
+            }
 
             try {
-                // get JSON as String
-                String json = client.fetchRevisions(title);
+                WikipediaApiClient client = new WikipediaApiClient();
+                RevisionParser parser = new RevisionParser();
 
-                // convert String -> InputStream
-                InputStream stream = new ByteArrayInputStream(
-                        json.getBytes(StandardCharsets.UTF_8)
-                );
+                // IMPORTANT: this must return InputStream
+                InputStream jsonStream = client.fetchRevisions(page);
 
-                // parse
-                RevisionResult result = parser.parse(stream);
+                RevisionResult result = parser.parse(jsonStream);
 
-                outputArea.setText(result.toString());
+                StringBuilder sb = new StringBuilder();
 
-            } catch (Exception ex) {
-                outputArea.setText("Error: Could not load or parse Wikipedia data.");
-                ex.printStackTrace();
+                if (result.wasRedirected()) {
+                    sb.append("Redirected to: ")
+                            .append(result.getRedirectedTo())
+                            .append("\n\n");
+                } else {
+                    sb.append("No redirect\n\n");
+                }
+
+                for (Revision rev : result.getRevisions()) {
+                    sb.append("User: ").append(rev.getUser()).append("\n");
+                    sb.append("Timestamp: ").append(rev.getTimestamp()).append("\n");
+                    sb.append("Comment: ").append(rev.getComment()).append("\n");
+                    sb.append("---------------------------\n");
+                }
+
+                outputArea.setText(sb.toString());
+
+            } catch (Exception e) {
+                outputArea.setText("Error: " + e.getMessage());
+                e.printStackTrace();
             }
         });
 
-        VBox layout = new VBox(10, titleField, fetchButton, outputArea);
-        layout.setPadding(new Insets(10));
-
-        Scene scene = new Scene(layout, 500, 400);
         stage.setTitle("Wikipedia Revision Viewer");
         stage.setScene(scene);
         stage.show();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 }
