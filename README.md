@@ -7,5 +7,10 @@ This java program lets user look up the most recent edits that was made to a Wik
 
 The program displays 15 most recent output from the newest to the oldest, it also handles special cases like an article does not exist or when there's network problems.
 
-## Run
+## Run Instructions
+
+### Command-Line Interface
 .\gradlew run --args"Insert Wikipedia article here"
+
+### GUI
+.\gradlew run
